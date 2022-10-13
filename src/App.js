@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import MoviesList from "./--COMPONENTS--/MoviesList";
 import "./App.css";
@@ -7,10 +7,12 @@ function App() {
   const [movieInfo, setMovieInfo] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  async function fetchDataHadler() {
+
+  const fetchDataHadler = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
+      console.log("componenet rendered ")
       let response = await fetch("https://swapi.dev/api/film/");
       if (!response.ok) {
         throw new Error("somthing went wrong");
@@ -26,17 +28,31 @@ function App() {
         };
       });
       setMovieInfo(collectInfo);
-      
     } catch (error) {
-      
       setError(error.message);
     }
     setIsLoading(false);
-  }
+  },[])
+
+
+
+  useEffect(() => {
+    fetchDataHadler()
+      
+    } ,[fetchDataHadler])
+    
+    
+    
+    
+
   function cancleRetrying() {
-    setError(null)
+    setError(null);
   }
- 
+function a() {
+  return(
+    <h1>...Refreash</h1>
+  )
+}
   return (
     <React.Fragment>
       <section>
@@ -50,10 +66,10 @@ function App() {
           <h1>No Movie found (click on fetch button )</h1>
         )}
         {isLoading && <h1>Loading...</h1>}
-        {error &&   (
+        {error && (
           <div>
             {error}
-            <h1>....Retrying</h1>
+            {a()}
             <button onClick={cancleRetrying}>Cancle</button>
           </div>
         )}
