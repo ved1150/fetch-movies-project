@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import MoviesList from "./--COMPONENTS--/MoviesList";
+import AddInfomanually from "./--COMPONENTS--/AddInfomanually"
 import "./App.css";
 
 function App() {
@@ -13,7 +14,7 @@ function App() {
       setIsLoading(true);
       setError(null);
       console.log("componenet rendered ")
-      let response = await fetch("https://swapi.dev/api/film/");
+      let response = await fetch("https://swapi.dev/api/films/");
       if (!response.ok) {
         throw new Error("somthing went wrong");
       }
@@ -56,6 +57,7 @@ function a() {
   return (
     <React.Fragment>
       <section>
+        <AddInfomanually />
         <button onClick={() => fetchDataHadler()} disabled={isLoading}>
           Fetch Movies
         </button>
