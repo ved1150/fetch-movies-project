@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import MoviesList from "./--COMPONENTS--/MoviesList";
-import AddInfomanually from "./--COMPONENTS--/AddInfomanually"
+import AddInfomanually from "./--COMPONENTS--/AddInfomanually";
 import "./App.css";
 
 function App() {
@@ -10,54 +10,69 @@ function App() {
   const [error, setError] = useState(null);
 
   const fetchDataHadler = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
     try {
       setIsLoading(true);
       setError(null);
-      console.log("componenet rendered ")
-      let response = await fetch("https://swapi.dev/api/films/");
+      console.log("componenet rendered ");
+      let response = await fetch(
+        "https://fetch-movies-project-default-rtdb.firebaseio.com/movies.json"
+      );
       if (!response.ok) {
         throw new Error("somthing went wrong");
       }
 
       let data = await response.json();
-      let collectInfo = data.results.map((movieList) => {
-        return {
-          id: movieList.episode_id,
-          title: movieList.title,
-          releaseDate: movieList.release_date,
-          openingText: movieList.opening_crawl,
-        };
-      });
-      setMovieInfo(collectInfo);
+
+      console.log(data);
+
+      const loadedMovies = [];
+
+      for (let key in data) {
+        loadedMovies.push({
+          id: key,
+          title: data[key].title,
+          releaseDate: data[key].releaseDate,
+          openingText: data[key].openingText,
+        });
+      }
+
+      setMovieInfo(loadedMovies);
     } catch (error) {
       setError(error.message);
     }
     setIsLoading(false);
-  },[])
-
-
+  }, []);
 
   useEffect(() => {
-    fetchDataHadler()
-      
-    } ,[fetchDataHadler])
-    
-    
-    
-    
+    fetchDataHadler();
+  }, [fetchDataHadler]);
+
+  async function addMovieHandler(movie) {
+    let res = await fetch(
+      "https://fetch-movies-project-default-rtdb.firebaseio.com/movies.json",
+      {
+        method: "POST",
+        body: JSON.stringify(movie),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    let data = await res.json();
+  }
 
   function cancleRetrying() {
     setError(null);
   }
-function a() {
-  return(
-    <h1>...Refreash</h1>
-  )
-}
+  function a() {
+    return <h1>...Refreash</h1>;
+  }
   return (
     <React.Fragment>
       <section>
-        <AddInfomanually />
+        <AddInfomanually addmovie={addMovieHandler} />
         <button onClick={() => fetchDataHadler()} disabled={isLoading}>
           Fetch Movies
         </button>
